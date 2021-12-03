@@ -1,0 +1,29 @@
+# editor
+.vscode
+
+# misc
+.DS_Store
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# nextjs
+.next
+
+# build
+app
+out
+dist
+build
+
+# dependencies
+node_modules
+
+# npm/yarn
+package-lock.json
+yarn.lock
+
+# eslint
+.eslintcache

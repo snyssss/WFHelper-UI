@@ -1,0 +1,15 @@
+# nextjs
+.next
+next-env.d.ts
+
+# build
+app
+out
+dist
+build
+
+# dependencies
+node_modules
+
+# bak
+bak
