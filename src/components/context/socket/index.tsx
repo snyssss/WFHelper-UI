@@ -10,7 +10,12 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 import { useSnackbar } from 'notistack';
 
-import { useGameLog, useGameSettingsByKey, useGameState } from '~/data';
+import {
+  useGameLog,
+  useGameSettings,
+  useGameSettingsByKey,
+  useGameState,
+} from '~/data';
 
 export type SocketContextProps = {
   sendMessage: (type: string, data?: unknown) => void;
@@ -25,6 +30,7 @@ const SocketContextProvider: FC = ({ children }): ReactElement => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const [gameLog, setGameLog] = useGameLog();
+  const [gameSettings, setGameSettings] = useGameSettings();
   const [, setGameState] = useGameState();
 
   const server = useGameSettingsByKey('server');
@@ -98,6 +104,15 @@ const SocketContextProvider: FC = ({ children }): ReactElement => {
       reader.readAsArrayBuffer(lastMessage.data);
     }
   }, [lastMessage]);
+
+  useEffect(() => {
+    if (window && gameSettings) {
+      setGameSettings({
+        ...gameSettings,
+        server: window.location.host,
+      });
+    }
+  }, []);
 
   return (
     <SocketContext.Provider

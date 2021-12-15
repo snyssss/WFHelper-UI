@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 
 import { NextComponentType } from 'next';
-import { AppInitialProps, AppContext, AppProps } from 'next/app';
-
-import AppContainer from '~/components/container/AppContainer';
+import { AppContext, AppInitialProps, AppProps } from 'next/app';
 
 import 'simplebar/src/simplebar.css';
+
+import AppContainer from '~/components/container/AppContainer';
 
 const App: NextComponentType<AppContext, AppInitialProps, AppProps> = ({
   Component,

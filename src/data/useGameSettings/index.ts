@@ -6,7 +6,7 @@ export interface GameSettings {
 
 const useGameSettings = () =>
   useGlobalState<GameSettings>('game-settings', {
-    server: './',
+    server: '',
   });
 
 const useGameSettingsByKey = (key: keyof GameSettings) => {
