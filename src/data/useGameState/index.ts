@@ -1,7 +1,10 @@
 import { useGlobalState } from '@zyda/swr-internal-state';
 
-const useGameState = () =>
-  useGlobalState<Record<string, unknown>>('game-state');
+export interface GameState {
+  [key: string]: unknown;
+}
+
+const useGameState = () => useGlobalState<GameState>('game-state', {});
 
 const useGameStateByKey = (key: string) => {
   const [state] = useGameState();

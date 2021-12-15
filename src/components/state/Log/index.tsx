@@ -34,30 +34,32 @@ const StyledBox = styled(Box)(({ theme }) => ({
 const Row = ({ index, style }: RowProps) => {
   const [gameLog] = useGameLog();
 
-  if (index < (gameLog || []).length) {
-    const [time, message] = (gameLog || [])[index];
+  if (gameLog) {
+    if (index < gameLog.length) {
+      const { time, message } = gameLog[index];
 
-    return (
-      <Tooltip
-        title={DateTime.fromSeconds(time).toLocaleString(
-          DateTime.DATETIME_MED_WITH_SECONDS
-        )}
-      >
-        <StyledBox
-          style={style}
-          key={index}
-          sx={
-            index % 2 === 0
-              ? { background: (theme) => theme.palette.grey[100] }
-              : {}
-          }
+      return (
+        <Tooltip
+          title={DateTime.fromSeconds(time).toLocaleString(
+            DateTime.DATETIME_MED_WITH_SECONDS
+          )}
         >
-          <Typography variant="body2" noWrap>
-            {message}
-          </Typography>
-        </StyledBox>
-      </Tooltip>
-    );
+          <StyledBox
+            style={style}
+            key={index}
+            sx={
+              index % 2 === 0
+                ? { background: (theme) => theme.palette.grey[100] }
+                : {}
+            }
+          >
+            <Typography variant="body2" noWrap>
+              {message}
+            </Typography>
+          </StyledBox>
+        </Tooltip>
+      );
+    }
   }
 
   return null;

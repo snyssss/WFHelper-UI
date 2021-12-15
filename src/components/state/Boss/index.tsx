@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useMemo } from 'react';
+import React, { ReactElement, useCallback, useContext, useMemo } from 'react';
 
 import { ExpandMore } from '@mui/icons-material';
 import {
@@ -16,6 +16,7 @@ import {
   Typography,
 } from '@mui/material';
 
+import { SocketContext } from '~/components/context/socket';
 import { useGameState, useGameStateByKey } from '~/data';
 
 export interface ComponentProps {
@@ -104,6 +105,8 @@ const ItemLabel = ({ name, level }: ComponentChildProps): ReactElement => {
 };
 
 const Component = ({ name, levels }: ComponentProps): ReactElement => {
+  const { sendMessage } = useContext(SocketContext);
+
   const switches = useGameStateByKey(name);
 
   const checked = useMemo(() => {
@@ -135,13 +138,12 @@ const Component = ({ name, levels }: ComponentProps): ReactElement => {
         return root + Number(value);
       }, '0b');
 
-      fetch(
-        `/setState?key=${encodeURIComponent(name)}&value=${encodeURIComponent(
-          r
-        )}`
-      );
+      sendMessage('setState', {
+        key: name,
+        value: r,
+      });
     },
-    [checked]
+    [checked, sendMessage]
   );
 
   return (

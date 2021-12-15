@@ -2,13 +2,21 @@ import React, { useState } from 'react';
 
 import { NextPage } from 'next';
 
-import { Dashboard as DashboardIcon, Photo } from '@mui/icons-material';
+import {
+  Dashboard as DashboardIcon,
+  Photo,
+  Settings,
+} from '@mui/icons-material';
 import { Box, Tabs } from '@mui/material';
 
 import TabLabel from '~/components/common/TabLabel';
 import TabPanel from '~/components/common/TabPanel';
 import PageContainer from '~/components/container/PageContainer';
-import { Dashboard, Screen } from '~/components/main';
+import {
+  Dashboard,
+  Screen,
+  Settings as SettingsComponent,
+} from '~/components/main';
 
 const IndexView: NextPage = () => {
   const [value, setValue] = useState(0);
@@ -38,12 +46,16 @@ const IndexView: NextPage = () => {
         >
           <TabLabel icon={<DashboardIcon />} title="仪表盘" />
           <TabLabel icon={<Photo />} title="屏幕" />
+          <TabLabel icon={<Settings />} title="设置" />
         </Tabs>
         <TabPanel value={value} index={0}>
           <Dashboard />
         </TabPanel>
         <TabPanel value={value} index={1}>
           <Screen />
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <SettingsComponent />
         </TabPanel>
       </Box>
     </PageContainer>

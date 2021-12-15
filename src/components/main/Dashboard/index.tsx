@@ -1,8 +1,11 @@
-import React, { ReactElement } from 'react';
+import React, { FC, ReactElement, useContext } from 'react';
 
 import { Grid, Paper, paperClasses } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import LoadingSpinner from '~/components/common/LoadingSpinner';
+import LoadProvider, { LoadContext } from '~/components/context/load';
+import { SocketContext } from '~/components/context/socket';
 import { Boss, Log, Misc, RunningTime } from '~/components/state';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -13,6 +16,18 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.grey[100],
   },
 }));
+
+const Container: FC = ({ children }) => {
+  const { connected } = useContext(SocketContext);
+
+  return (
+    <LoadProvider loading={connected === false}>
+      <LoadContext.Consumer>
+        {({ loading }) => (loading ? <LoadingSpinner /> : <>{children}</>)}
+      </LoadContext.Consumer>
+    </LoadProvider>
+  );
+};
 
 const Component = (): ReactElement => {
   const list = [
@@ -28,7 +43,7 @@ const Component = (): ReactElement => {
   ];
 
   return (
-    <>
+    <Container>
       <StyledPaper>
         <RunningTime />
       </StyledPaper>
@@ -50,7 +65,7 @@ const Component = (): ReactElement => {
           <Misc />
         </Grid>
       </Grid>
-    </>
+    </Container>
   );
 };
 

@@ -1,99 +1,103 @@
-import React, { ReactElement, useEffect, useRef } from 'react';
+import React, {
+  FC,
+  ReactElement,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import useWebSocket from 'react-use-websocket';
 
-import { Refresh } from '@mui/icons-material';
-import { Card, CardHeader, Divider, IconButton, Tooltip } from '@mui/material';
+import LoadingSpinner from '~/components/common/LoadingSpinner';
+import LoadProvider, { LoadContext } from '~/components/context/load';
+import { SocketContext } from '~/components/context/socket';
+import { useGameSettingsByKey } from '~/data';
+
+const Container: FC = ({ children }) => {
+  const { connected } = useContext(SocketContext);
+
+  return (
+    <LoadProvider loading={connected === false}>
+      <LoadContext.Consumer>
+        {({ loading }) => (loading ? <LoadingSpinner /> : <>{children}</>)}
+      </LoadContext.Consumer>
+    </LoadProvider>
+  );
+};
 
 const Component = (): ReactElement => {
   const ref = useRef<HTMLCanvasElement | null>(null);
 
-  const loadScreenCap = () => {
+  const server = useGameSettingsByKey('server');
+
+  const { sendMessage } = useContext(SocketContext);
+
+  const [socketUrl, setSocketUrl] = useState<string | null>(null);
+
+  const { lastMessage } = useWebSocket(socketUrl, {
+    reconnectAttempts: Infinity,
+    reconnectInterval: 1000 * 10,
+  });
+
+  useEffect(() => {
+    setSocketUrl(`ws://${server}/stream`);
+
+    return () => {
+      setSocketUrl(null);
+    };
+  }, [server]);
+
+  const touchScreen = (x: number, y: number) => {
     if (ref && ref.current) {
       const canvas = ref.current;
       const ctx = canvas.getContext('2d');
 
-      fetch(`/getScreenShot`)
-        .then((res) => res.blob())
-        .then((blob) => {
-          const img = new Image();
+      if (canvas.style.cursor !== 'not-allowed') {
+        canvas.style.cursor = 'not-allowed';
 
-          img.src = URL.createObjectURL(blob);
-          img.onload = () => {
-            canvas.width = img.width;
-            canvas.height = img.height;
+        if (ctx) {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.beginPath();
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fill();
+          ctx.globalCompositeOperation = 'source-over';
+        }
 
-            if (ctx) {
-              ctx.drawImage(img, 0, 0);
-            }
-
-            img.remove();
-          };
+        sendMessage('touchScreen', {
+          x,
+          y,
         });
+      }
     }
   };
 
-  const touchScreen = (() => {
-    const delay = 1000;
+  const swipeScreen = (x1: number, y1: number, x2: number, y2: number) => {
+    if (ref && ref.current) {
+      const canvas = ref.current;
+      const ctx = canvas.getContext('2d');
 
-    return (x: number, y: number) => {
-      if (ref && ref.current) {
-        const canvas = ref.current;
-        const ctx = canvas.getContext('2d');
+      if (canvas.style.cursor !== 'not-allowed') {
+        canvas.style.cursor = 'not-allowed';
 
-        if (canvas.style.cursor !== 'not-allowed') {
-          fetch(`/touchScreen?x=${x}&y=${y}`)
-            .then(() => {
-              canvas.style.cursor = 'not-allowed';
-
-              if (ctx) {
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-                ctx.beginPath();
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fill();
-                ctx.globalCompositeOperation = 'source-over';
-              }
-            })
-            .then(() => new Promise((resolve) => setTimeout(resolve, delay)))
-            .then(() => {
-              canvas.style.cursor = 'auto';
-            })
-            .then(loadScreenCap);
+        if (ctx) {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.beginPath();
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fill();
+          ctx.globalCompositeOperation = 'source-over';
         }
+
+        sendMessage('swipeScreen', {
+          x1,
+          y1,
+          x2,
+          y2,
+        });
       }
-    };
-  })();
-
-  const swipeScreen = (() => {
-    const delay = 1000;
-
-    return (x1: number, y1: number, x2: number, y2: number) => {
-      if (ref && ref.current) {
-        const canvas = ref.current;
-        const ctx = canvas.getContext('2d');
-
-        if (canvas.style.cursor !== 'not-allowed') {
-          fetch(`/swipeScreen?x1=${x1}&y1=${y1}&x2=${x2}&y2=${y2}`)
-            .then(() => {
-              canvas.style.cursor = 'not-allowed';
-
-              if (ctx) {
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-                ctx.beginPath();
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fill();
-                ctx.globalCompositeOperation = 'source-over';
-              }
-            })
-            .then(() => new Promise((resolve) => setTimeout(resolve, delay)))
-            .then(() => {
-              canvas.style.cursor = 'auto';
-            })
-            .then(loadScreenCap);
-        }
-      }
-    };
-  })();
+    }
+  };
 
   useEffect(() => {
     if (ref && ref.current) {
@@ -136,26 +140,34 @@ const Component = (): ReactElement => {
       canvas.addEventListener('mousedown', Mouse.mousedown);
       canvas.addEventListener('mouseup', Mouse.mouseup);
       canvas.addEventListener('mouseleave', Mouse.mouseup);
-
-      loadScreenCap();
     }
   }, [ref]);
 
-  return (
-    <Card>
-      <CardHeader
-        action={
-          <Tooltip title="刷新">
-            <IconButton onClick={loadScreenCap}>
-              <Refresh />
-            </IconButton>
-          </Tooltip>
+  useEffect(() => {
+    if (ref && ref.current && lastMessage) {
+      const canvas = ref.current;
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      img.src = URL.createObjectURL(lastMessage.data);
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvas.style.cursor = 'auto';
+
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
         }
-        title="截图"
-      />
-      <Divider />
+
+        img.remove();
+      };
+    }
+  }, [ref, lastMessage]);
+
+  return (
+    <Container>
       <canvas ref={ref} />
-    </Card>
+    </Container>
   );
 };
 

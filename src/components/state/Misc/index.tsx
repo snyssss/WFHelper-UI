@@ -23,24 +23,26 @@ const StyledBox = styled(Box)(({ theme }) => ({
 const Row = ({ index, style }: RowProps) => {
   const [gameState] = useGameState();
 
-  if (index < Object.keys(gameState || {}).length) {
-    const key = Object.keys(gameState || {})[index];
+  if (gameState) {
+    if (index < Object.keys(gameState).length) {
+      const key = Object.keys(gameState)[index];
 
-    return (
-      <StyledBox
-        style={style}
-        key={index}
-        sx={
-          index % 2 === 0
-            ? { background: (theme) => theme.palette.grey[100] }
-            : {}
-        }
-      >
-        <Typography variant="body2" noWrap>
-          {key} : {(gameState || {})[key]}
-        </Typography>
-      </StyledBox>
-    );
+      return (
+        <StyledBox
+          style={style}
+          key={index}
+          sx={
+            index % 2 === 0
+              ? { background: (theme) => theme.palette.grey[100] }
+              : {}
+          }
+        >
+          <Typography variant="body2" noWrap>
+            {key} : {String(gameState[key])}
+          </Typography>
+        </StyledBox>
+      );
+    }
   }
 
   return null;
