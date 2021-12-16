@@ -35,7 +35,10 @@ const SocketContextProvider: FC = ({ children }): ReactElement => {
 
   const server = useGameSettingsByKey('server');
 
-  const socketUrl = useMemo(() => `ws://${server}/websocket`, [server]);
+  const socketUrl = useMemo(
+    () => (server ? `ws://${server}/websocket` : null),
+    [server]
+  );
 
   const { sendJsonMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
     reconnectAttempts: Infinity,

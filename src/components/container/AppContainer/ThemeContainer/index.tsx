@@ -2,12 +2,13 @@ import React, { FC } from 'react';
 
 import Head from 'next/head';
 
-import createCache from '@emotion/cache';
-import { CacheProvider } from '@emotion/react';
-import createEmotionServer from '@emotion/server/create-instance';
 import '@mui/lab/themeAugmentation';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
+
+import createCache from '@emotion/cache';
+import { CacheProvider } from '@emotion/react';
+import createEmotionServer from '@emotion/server/create-instance';
 
 import ThemeContextProvider, { ThemeContext } from '~/components/context/theme';
 

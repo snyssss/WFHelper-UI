@@ -40,7 +40,11 @@ const Component = (): ReactElement => {
   });
 
   useEffect(() => {
-    setSocketUrl(`ws://${server}/stream`);
+    if (server) {
+      setSocketUrl(`ws://${server}/stream`);
+    } else {
+      setSocketUrl(null);
+    }
 
     return () => {
       setSocketUrl(null);
@@ -159,7 +163,7 @@ const Component = (): ReactElement => {
           ctx.drawImage(img, 0, 0);
         }
 
-        img.remove();
+        URL.revokeObjectURL(img.src);
       };
     }
   }, [ref, lastMessage]);

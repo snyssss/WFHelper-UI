@@ -109,6 +109,11 @@ const Component = ({ name, levels }: ComponentProps): ReactElement => {
 
   const switches = useGameStateByKey(name);
 
+  const enhanced = useMemo(
+    () => String(switches).indexOf('0b') === 0,
+    [switches]
+  );
+
   const checked = useMemo(() => {
     if (switches) {
       if (String(switches).indexOf('0b') === 0) {
@@ -149,39 +154,43 @@ const Component = ({ name, levels }: ComponentProps): ReactElement => {
   return (
     <Accordion>
       <Summary name={name} />
-      <Divider />
-      <AccordionDetails sx={{ p: 1 }}>
-        <List sx={{ p: 0, width: '100%', bgcolor: 'background.paper' }}>
-          {['超级', '高级+', '高级', '中级', '初级'].map((value) => {
-            const hasSwitch = levels.includes(value);
+      {enhanced && (
+        <>
+          <Divider />
+          <AccordionDetails sx={{ p: 1 }}>
+            <List sx={{ p: 0, width: '100%', bgcolor: 'background.paper' }}>
+              {['超级', '高级+', '高级', '中级', '初级'].map((value) => {
+                const hasSwitch = levels.includes(value);
 
-            return (
-              <ListItem
-                key={value}
-                secondaryAction={
-                  hasSwitch && (
-                    <Checkbox
-                      edge="end"
-                      onChange={handleToggle(value)}
-                      checked={isChecked(value)}
-                    />
-                  )
-                }
-                disablePadding
-              >
-                <ListItemButton
-                  onClick={handleToggle(value)}
-                  disabled={hasSwitch === false}
-                >
-                  <ListItemText
-                    primary={<ItemLabel name={name} level={value} />}
-                  />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
-      </AccordionDetails>
+                return (
+                  <ListItem
+                    key={value}
+                    secondaryAction={
+                      hasSwitch && (
+                        <Checkbox
+                          edge="end"
+                          onChange={handleToggle(value)}
+                          checked={isChecked(value)}
+                        />
+                      )
+                    }
+                    disablePadding
+                  >
+                    <ListItemButton
+                      onClick={handleToggle(value)}
+                      disabled={hasSwitch === false}
+                    >
+                      <ListItemText
+                        primary={<ItemLabel name={name} level={value} />}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </AccordionDetails>
+        </>
+      )}
     </Accordion>
   );
 };
