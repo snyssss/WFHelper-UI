@@ -6,12 +6,12 @@ import { styled } from '@mui/material/styles';
 import LoadingSpinner from '~/components/common/LoadingSpinner';
 import LoadProvider, { LoadContext } from '~/components/context/load';
 import { SocketContext } from '~/components/context/socket';
-import { Boss, Log, Misc, RunningTime } from '~/components/state';
+import { Boss, CurrentTask, Log, Misc, RunningTime } from '~/components/state';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   [`&.${paperClasses.root}`]: {
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     padding: theme.spacing(4),
     backgroundColor: theme.palette.grey[100],
   },
@@ -45,6 +45,7 @@ const Component = (): ReactElement => {
   return (
     <Container>
       <StyledPaper>
+        <CurrentTask />
         <RunningTime />
       </StyledPaper>
       <Grid container p={2} pb={0} spacing={2}>

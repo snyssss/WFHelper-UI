@@ -15,6 +15,7 @@ import {
   useGameSettings,
   useGameSettingsByKey,
   useGameState,
+  useGameTargetList
 } from '~/data';
 
 export type SocketContextProps = {
@@ -32,6 +33,7 @@ const SocketContextProvider: FC = ({ children }): ReactElement => {
   const [gameLog, setGameLog] = useGameLog();
   const [gameSettings, setGameSettings] = useGameSettings();
   const [, setGameState] = useGameState();
+  const [, setGameTargetList] = useGameTargetList();
 
   const server = useGameSettingsByKey('server');
 
@@ -67,6 +69,10 @@ const SocketContextProvider: FC = ({ children }): ReactElement => {
         type: 'getLogArray',
       });
 
+      sendJsonMessage({
+        type: 'getTargetList',
+      });
+
       closeSnackbar('socket');
     } else {
       enqueueSnackbar('无法连接到服务器', {
@@ -96,6 +102,10 @@ const SocketContextProvider: FC = ({ children }): ReactElement => {
 
           if (res.type === 'getLogArray_ACK') {
             setGameLog(res.data.reverse());
+          }
+
+          if (res.type === 'getTargetList_ACK') {
+            setGameTargetList(res.data);
           }
 
           if (res.type === 'onLogAppend') {

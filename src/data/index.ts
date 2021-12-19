@@ -4,3 +4,4 @@ export {
   useGameSettingsByKey,
 } from './useGameSettings';
 export { default as useGameState, useGameStateByKey } from './useGameState';
+export { default as useGameTargetList } from './useGameTargetList';

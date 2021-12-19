@@ -17,6 +17,7 @@ const StyledPaper = styled(Paper)(() => ({
 const StyledBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
+  justifyContent: 'space-between',
   padding: theme.spacing(2),
   width: theme.spacing(24),
 }));
