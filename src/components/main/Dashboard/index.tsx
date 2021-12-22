@@ -31,15 +31,15 @@ const Container: FC = ({ children }) => {
 
 const Component = (): ReactElement => {
   const list = [
-    ['八岐大蛇', ['高级']],
-    ['管理者', ['高级', '中级']],
-    ['诅咒弧魔艾基尔', ['高级', '中级']],
-    ['不死王瑞西塔尔', ['高级', '中级']],
-    ['白虎', ['高级', '中级']],
-    ['寄居蟹船长', ['高级', '中级']],
-    ['废墟魔像', ['超级', '高级+', '高级', '中级']],
-    ['维·索拉斯', ['初级']],
-    ['伊尔考普斯', ['高级+', '高级']],
+    '八岐大蛇',
+    '管理者',
+    '诅咒弧魔艾基尔',
+    '不死王瑞西塔尔',
+    '白虎',
+    '寄居蟹船长',
+    '废墟魔像',
+    '维·索拉斯',
+    '伊尔考普斯',
   ];
 
   return (
@@ -49,14 +49,11 @@ const Component = (): ReactElement => {
         <RunningTime />
       </StyledPaper>
       <Grid container p={2} pb={0} spacing={2}>
-        {list.map((item) => {
-          const [name, levels] = item as [string, string[]];
-          return (
-            <Grid key={name} item xs={4}>
-              <Boss name={name} levels={levels} />
-            </Grid>
-          );
-        })}
+        {list.map((item) => (
+          <Grid key={item} item xs={4}>
+            <Boss name={item} />
+          </Grid>
+        ))}
       </Grid>
       <Grid container p={2} spacing={2}>
         <Grid item xs={6}>

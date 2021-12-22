@@ -43,7 +43,11 @@ const Component = (): ReactElement => {
     <StyledPaper>
       <StyledBox>
         <Typography variant="h6">当前任务</Typography>
-        <Select size="small" value={currentTask} onChange={handleChange}>
+        <Select
+          size="small"
+          value={currentTask as string}
+          onChange={handleChange}
+        >
           {(taskList || []).map((item) => (
             <MenuItem key={item} value={item}>
               {item}

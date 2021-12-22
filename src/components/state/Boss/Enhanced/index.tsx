@@ -1,0 +1,219 @@
+import React, { ReactElement, useCallback, useContext, useMemo } from 'react';
+
+import { ExpandMore } from '@mui/icons-material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Checkbox,
+  Chip,
+  Divider,
+  FormControl,
+  InputLabel,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent,
+  Typography,
+} from '@mui/material';
+
+import { SocketContext } from '~/components/context/socket';
+import { useGameStateByKey } from '~/data';
+import { BossInfo, BossName, GameState } from '~/data/useGameState';
+
+export interface ComponentProps {
+  name: string;
+}
+
+const PartyMap = {
+  默认: '',
+  A: 'A',
+  B: 'B',
+  C: 'C',
+  D: 'D',
+  E: 'E',
+  F: 'F',
+  G: 'G',
+  H: 'H',
+  I: 'I',
+  J: 'J',
+};
+
+const Summary = ({ name }: ComponentProps): ReactElement => {
+  const settings = useGameStateByKey('铃铛设置') as GameState['铃铛设置'];
+
+  const counter = useGameStateByKey('铃铛计数') as Record<BossName, number>;
+
+  const current = useGameStateByKey('当前铃铛') as BossInfo;
+
+  const count = useMemo(() => {
+    if (counter) {
+      return Object.entries(settings[name]).reduce(
+        (accumulator, [_, info]) => accumulator + (counter[info.name] || 0),
+        0
+      );
+    }
+
+    return 0;
+  }, [settings, current, counter]);
+
+  const level = useMemo(() => {
+    const result = Object.entries(settings[name]).find(
+      ([_, info]) => info.name === current.name
+    );
+
+    if (result) {
+      return <Chip color="primary" size="small" label={result[0]} />;
+    }
+
+    return null;
+  }, [settings, current]);
+
+  return (
+    <AccordionSummary
+      expandIcon={<ExpandMore />}
+      sx={level ? { background: (theme) => theme.palette.secondary.light } : {}}
+    >
+      <Typography sx={{ width: 180, flexShrink: 0 }}>{name}</Typography>
+      <Typography
+        sx={{
+          flex: 1,
+          color: 'text.secondary',
+        }}
+      >
+        {count}
+      </Typography>
+      <Box sx={{ width: 80 }}>{level}</Box>
+    </AccordionSummary>
+  );
+};
+
+const Component = ({ name }: ComponentProps): ReactElement | null => {
+  const { sendMessage } = useContext(SocketContext);
+
+  const settings = useGameStateByKey('铃铛设置') as GameState['铃铛设置'];
+
+  const counter = useGameStateByKey('铃铛计数') as Record<BossName, number>;
+
+  const handleToggleEnabled = useCallback(
+    (level: string, enabled: boolean) => () => {
+      sendMessage('setConfigSettings', {
+        key: '铃铛设置',
+        value: {
+          ...settings,
+          [name]: {
+            ...settings[name],
+            [level]: {
+              ...settings[name][level],
+              enabled: !enabled,
+            },
+          },
+        },
+      });
+    },
+    [name, settings, sendMessage]
+  );
+
+  const handleChangeParty = useCallback(
+    (level: string) => (event: SelectChangeEvent) => {
+      sendMessage('setConfigSettings', {
+        key: '铃铛设置',
+        value: {
+          ...settings,
+          [name]: {
+            ...settings[name],
+            [level]: {
+              ...settings[name][level],
+              party: event.target.value as string,
+            },
+          },
+        },
+      });
+    },
+    [name, settings, sendMessage]
+  );
+
+  const handleCancel = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation();
+  };
+
+  if (settings[name]) {
+    return (
+      <Accordion>
+        <Summary name={name} />
+        <Divider />
+        <AccordionDetails sx={{ p: 1 }}>
+          <List sx={{ p: 0, width: '100%', bgcolor: 'background.paper' }}>
+            {Object.entries(settings[name]).map(([level, info]) => {
+              const { name: key, party, enabled } = info;
+
+              return (
+                <ListItem
+                  key={key}
+                  secondaryAction={
+                    <Checkbox
+                      edge="end"
+                      onChange={handleToggleEnabled(level, enabled)}
+                      checked={enabled}
+                    />
+                  }
+                  disablePadding
+                >
+                  <ListItemButton
+                    sx={{ pl: 1 }}
+                    onClick={handleToggleEnabled(level, enabled)}
+                  >
+                    <ListItemText
+                      primary={
+                        <Box display="flex" alignItems="center">
+                          <Typography sx={{ width: 180, flexShrink: 0 }}>
+                            {level}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              flex: 1,
+                              color: 'text.secondary',
+                            }}
+                          >
+                            {counter ? counter[key] : ''}
+                          </Typography>
+                          <FormControl size="small" sx={{ width: 80 }}>
+                            <InputLabel shrink>队伍</InputLabel>
+                            <Select
+                              input={<OutlinedInput notched label="队伍" />}
+                              value={party}
+                              onClick={handleCancel}
+                              onChange={handleChangeParty(level)}
+                              displayEmpty
+                            >
+                              {Object.entries(PartyMap).map(
+                                ([label, value]) => (
+                                  <MenuItem key={label} value={value}>
+                                    {label}
+                                  </MenuItem>
+                                )
+                              )}
+                            </Select>
+                          </FormControl>
+                        </Box>
+                      }
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </List>
+        </AccordionDetails>
+      </Accordion>
+    );
+  }
+
+  return null;
+};
+
+export default Component;
