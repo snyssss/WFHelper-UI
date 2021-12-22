@@ -102,14 +102,10 @@ const Component = ({ name }: ComponentProps): ReactElement | null => {
 
   const handleToggleEnabled = useCallback(
     (level: string, enabled: boolean) => () => {
-      sendMessage('setConfigSettings', {
-        key: '铃铛设置',
-        value: {
-          ...settings,
+      sendMessage('mergeConfigSettings', {
+        铃铛设置: {
           [name]: {
-            ...settings[name],
             [level]: {
-              ...settings[name][level],
               enabled: !enabled,
             },
           },
@@ -121,14 +117,10 @@ const Component = ({ name }: ComponentProps): ReactElement | null => {
 
   const handleChangeParty = useCallback(
     (level: string) => (event: SelectChangeEvent) => {
-      sendMessage('setConfigSettings', {
-        key: '铃铛设置',
-        value: {
-          ...settings,
+      sendMessage('mergeConfigSettings', {
+        铃铛设置: {
           [name]: {
-            ...settings[name],
             [level]: {
-              ...settings[name][level],
               party: event.target.value as string,
             },
           },

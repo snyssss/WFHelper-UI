@@ -15,7 +15,7 @@ import {
   useGameSettings,
   useGameSettingsByKey,
   useGameState,
-  useGameTargetList
+  useGameTargetList,
 } from '~/data';
 
 export type SocketContextProps = {
