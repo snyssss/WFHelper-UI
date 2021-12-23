@@ -11,7 +11,7 @@ const changeColor = (
   imageData: ImageData,
   sourceColor: [number, number, number],
   targetColor: [number, number, number],
-  threshold = 255 * 0.4
+  threshold: number
 ) => {
   for (let i = 0; i < imageData.data.length; i += 4) {
     if (
@@ -66,14 +66,14 @@ const Component = (): ReactElement | null => {
 
       img.src = URL.createObjectURL(lastMessage.data);
       img.onload = () => {
-        canvas.width = 70;
-        canvas.height = 30;
+        canvas.width = 80;
+        canvas.height = 50;
 
         if (ctx) {
           ctx.drawImage(
             img,
             120,
-            20,
+            10,
             canvas.width,
             canvas.height,
             0,
@@ -84,8 +84,8 @@ const Component = (): ReactElement | null => {
 
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-          changeColor(imageData, [255, 158, 25], [49, 53, 49]);
-          changeColor(imageData, [255, 255, 255], [255, 158, 25]);
+          changeColor(imageData, [247, 251, 247], [49, 53, 49], 2);
+          changeColor(imageData, [255, 158, 25], [49, 53, 49], 64);
 
           ctx.putImageData(imageData, 0, 0);
         }
