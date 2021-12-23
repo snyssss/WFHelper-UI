@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign, prefer-destructuring */
 import { ReactElement, useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
@@ -5,6 +6,25 @@ import { useDebounceFn } from 'ahooks';
 import Tesseract from 'tesseract.js';
 
 import { useEnergy, useGameSettingsByKey } from '~/data';
+
+const changeColor = (
+  imageData: ImageData,
+  sourceColor: [number, number, number],
+  targetColor: [number, number, number],
+  threshold = 255 * 0.4
+) => {
+  for (let i = 0; i < imageData.data.length; i += 4) {
+    if (
+      Math.abs(imageData.data[i] - sourceColor[0]) < threshold &&
+      Math.abs(imageData.data[i + 1] - sourceColor[1]) < threshold &&
+      Math.abs(imageData.data[i + 2] - sourceColor[2]) < threshold
+    ) {
+      imageData.data[i] = targetColor[0];
+      imageData.data[i + 1] = targetColor[1];
+      imageData.data[i + 2] = targetColor[2];
+    }
+  }
+};
 
 const Component = (): ReactElement | null => {
   const server = useGameSettingsByKey('server');
@@ -61,6 +81,13 @@ const Component = (): ReactElement | null => {
             canvas.width,
             canvas.height
           );
+
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+          changeColor(imageData, [255, 158, 25], [49, 53, 49]);
+          changeColor(imageData, [255, 255, 255], [255, 158, 25]);
+
+          ctx.putImageData(imageData, 0, 0);
         }
 
         URL.revokeObjectURL(img.src);
