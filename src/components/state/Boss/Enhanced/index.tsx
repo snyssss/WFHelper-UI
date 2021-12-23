@@ -79,7 +79,7 @@ const Summary = ({ name }: ComponentProps): ReactElement => {
       expandIcon={<ExpandMore />}
       sx={level ? { background: (theme) => theme.palette.secondary.light } : {}}
     >
-      <Typography sx={{ width: 180, flexShrink: 0 }}>{name}</Typography>
+      <Typography sx={{ width: 150, flexShrink: 0 }}>{name}</Typography>
       <Typography
         sx={{
           flex: 1,
@@ -88,7 +88,7 @@ const Summary = ({ name }: ComponentProps): ReactElement => {
       >
         {count}
       </Typography>
-      <Box sx={{ width: 80 }}>{level}</Box>
+      <Box sx={{ width: 80, textAlign: 'center', mr: 1 }}>{level}</Box>
     </AccordionSummary>
   );
 };
@@ -163,7 +163,7 @@ const Component = ({ name }: ComponentProps): ReactElement | null => {
                     <ListItemText
                       primary={
                         <Box display="flex" alignItems="center">
-                          <Typography sx={{ width: 180, flexShrink: 0 }}>
+                          <Typography sx={{ width: 150, flexShrink: 0 }}>
                             {level}
                           </Typography>
                           <Typography
