@@ -44,7 +44,7 @@ const Component = (): ReactElement | null => {
       }
     },
     {
-      wait: 1000,
+      wait: 1000 * 60,
     }
   );
 
