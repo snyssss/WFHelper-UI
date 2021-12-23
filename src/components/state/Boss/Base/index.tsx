@@ -1,12 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
 
-import {
-  Accordion,
-  AccordionSummary,
-  Box,
-  Chip,
-  Typography,
-} from '@mui/material';
+import { Box, Chip, Paper, Typography } from '@mui/material';
 
 import { useGameState, useGameStateByKey } from '~/data';
 
@@ -43,29 +37,27 @@ const Summary = ({ name }: ComponentProps): ReactElement => {
   }, [currentBoss]);
 
   return (
-    <AccordionSummary
+    <Paper
       sx={level ? { background: (theme) => theme.palette.secondary.light } : {}}
     >
-      <Typography sx={{ width: 180, flexShrink: 0 }}>{name}</Typography>
-      <Typography
-        sx={{
-          flex: 1,
-          color: 'text.secondary',
-        }}
-      >
-        {count}
-      </Typography>
-      <Box sx={{ width: 80 }}>{level}</Box>
-    </AccordionSummary>
+      <Box display="flex" alignItems="center" px={2} minHeight={48}>
+        <Typography sx={{ width: 180, flexShrink: 0 }}>{name}</Typography>
+        <Typography
+          sx={{
+            flex: 1,
+            color: 'text.secondary',
+          }}
+        >
+          {count}
+        </Typography>
+        <Box sx={{ width: 80 }}>{level}</Box>
+      </Box>
+    </Paper>
   );
 };
 
 const Component = ({ name }: ComponentProps): ReactElement => {
-  return (
-    <Accordion>
-      <Summary name={name} />
-    </Accordion>
-  );
+  return <Summary name={name} />;
 };
 
 export default Component;
