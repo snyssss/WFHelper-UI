@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
 import {
@@ -61,19 +61,23 @@ const Component = (): ReactElement => {
 
   const { lastMessage, getWebSocket } = useWebSocket(socketUrl);
 
-  useInterval(() => {
+  const run = useCallback(() => {
     if (server) {
       setSocketUrl(`ws://${server}/stream`);
     } else {
       setSocketUrl(null);
     }
-  }, 1000 * 10);
+  }, [server]);
+
+  useInterval(run, 1000 * 10);
 
   useEffect(() => {
+    run();
+
     return () => {
       setSocketUrl(null);
     };
-  }, []);
+  }, [run]);
 
   useEffect(() => {
     if (lastMessage) {
@@ -128,6 +132,7 @@ const Component = (): ReactElement => {
         <Typography variant="h6">体力</Typography>
         <StyledLinearProgress
           variant={energy < 0 ? 'indeterminate' : 'determinate'}
+          color={energy < 100 ? 'primary' : 'secondary'}
           value={energy}
         />
         <Typography variant="caption" sx={{ textAlign: 'right' }}>
