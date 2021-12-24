@@ -1,5 +1,5 @@
 import { useGlobalState } from '@zyda/swr-internal-state';
 
-const useEnergy = () => useGlobalState<string>('energy', '');
+const useEnergy = () => useGlobalState<number>('energy', 0);
 
 export default useEnergy;

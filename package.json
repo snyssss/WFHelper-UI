@@ -1,6 +1,6 @@
 {
   "name": "wfhelper-ui",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "private": true,
   "scripts": {
     "build": "next build && next export",
@@ -36,8 +36,7 @@
     "react-virtualized": "^9.22.3",
     "react-window": "^1.8.6",
     "simplebar": "5.3.6",
-    "simplebar-react": "2.3.6",
-    "tesseract.js": "^2.1.5"
+    "simplebar-react": "2.3.6"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "12.0.4",
