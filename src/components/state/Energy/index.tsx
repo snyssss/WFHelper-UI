@@ -28,6 +28,10 @@ const StyledBox = styled(Box)(({ theme }) => ({
   width: theme.spacing(24),
 }));
 
+const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: theme.spacing(1),
+}));
+
 const getColorPercentage = (
   imageData: ImageData,
   targetColor: [number, number, number],
@@ -51,7 +55,7 @@ const getColorPercentage = (
 const Component = (): ReactElement => {
   const server = useGameSettingsByKey('server');
 
-  const [energy, setEnergy] = useState(0);
+  const [energy, setEnergy] = useState(-1);
 
   const [socketUrl, setSocketUrl] = useState<string | null>(null);
 
@@ -122,11 +126,13 @@ const Component = (): ReactElement => {
     <StyledPaper>
       <StyledBox>
         <Typography variant="h6">体力</Typography>
-        <LinearProgress
-          variant="determinate"
-          color={energy < 100 ? 'primary' : 'secondary'}
+        <StyledLinearProgress
+          variant={energy < 0 ? 'indeterminate' : 'determinate'}
           value={energy}
         />
+        <Typography variant="caption" sx={{ textAlign: 'right' }}>
+          {energy < 0 ? '...' : `${energy} %`}
+        </Typography>
       </StyledBox>
     </StyledPaper>
   );
