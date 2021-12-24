@@ -53,6 +53,8 @@ const getColorPercentage = (
 };
 
 const Component = (): ReactElement => {
+  const current = useGameStateByKey('当前铃铛');
+
   const server = useGameSettingsByKey('server');
 
   const [energy, setEnergy] = useState(-1);
@@ -62,12 +64,16 @@ const Component = (): ReactElement => {
   const { lastMessage, getWebSocket } = useWebSocket(socketUrl);
 
   const run = useCallback(() => {
+    if (JSON.stringify(current) === '{}') {
+      return;
+    }
+
     if (server) {
       setSocketUrl(`ws://${server}/stream`);
     } else {
       setSocketUrl(null);
     }
-  }, [server]);
+  }, [current, server]);
 
   useInterval(run, 1000 * 10);
 
@@ -144,7 +150,7 @@ const Component = (): ReactElement => {
 };
 
 const Container = (): ReactElement | null => {
-  const enhanced = useGameStateByKey('铃铛设置');
+  const enhanced = useGameStateByKey('当前铃铛');
 
   if (enhanced) {
     return <Component />;
