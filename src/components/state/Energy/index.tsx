@@ -64,7 +64,7 @@ const Component = (): ReactElement => {
   const { lastMessage, getWebSocket } = useWebSocket(socketUrl);
 
   const run = useCallback(() => {
-    if (JSON.stringify(current) === '{}') {
+    if (JSON.stringify(current) !== '{}') {
       return;
     }
 
