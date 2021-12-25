@@ -19,6 +19,7 @@ import {
   OutlinedInput,
   Select,
   SelectChangeEvent,
+  Theme,
   Typography,
 } from '@mui/material';
 
@@ -74,11 +75,25 @@ const Summary = ({ name }: ComponentProps): ReactElement => {
     return null;
   }, [settings, current]);
 
+  const enabled = useMemo(
+    () => Object.entries(settings[name]).find(([_, info]) => info.enabled),
+    [settings]
+  );
+
+  const background = useMemo(() => {
+    if (level) {
+      return (theme: Theme) => theme.palette.secondary.light;
+    }
+
+    if (enabled === undefined) {
+      return (theme: Theme) => theme.palette.grey[400];
+    }
+
+    return undefined;
+  }, [level, enabled]);
+
   return (
-    <AccordionSummary
-      expandIcon={<ExpandMore />}
-      sx={level ? { background: (theme) => theme.palette.secondary.light } : {}}
-    >
+    <AccordionSummary expandIcon={<ExpandMore />} sx={{ background }}>
       <Typography sx={{ width: 150, flexShrink: 0 }}>{name}</Typography>
       <Typography
         sx={{
