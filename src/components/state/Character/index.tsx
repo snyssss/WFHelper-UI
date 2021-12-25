@@ -222,8 +222,6 @@ const Component = (): ReactElement => {
         socket.close();
       }
 
-      setSocketUrl(null);
-
       const img = new Image();
 
       img.src = URL.createObjectURL(lastMessage.data);
@@ -233,6 +231,8 @@ const Component = (): ReactElement => {
 
         URL.revokeObjectURL(img.src);
       };
+
+      setSocketUrl(null);
     }
   }, [lastMessage]);
 
