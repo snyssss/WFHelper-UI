@@ -8,8 +8,8 @@ import LoadProvider, { LoadContext } from '~/components/context/load';
 import { SocketContext } from '~/components/context/socket';
 import {
   Boss,
+  Character,
   CurrentTask,
-  Energy,
   Log,
   Misc,
   RunningTime,
@@ -53,7 +53,7 @@ const Component = (): ReactElement => {
     <Container>
       <StyledPaper>
         <CurrentTask />
-        <Energy />
+        <Character />
         <RunningTime />
       </StyledPaper>
       <Grid container p={2} pb={0} spacing={2}>
