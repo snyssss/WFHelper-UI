@@ -53,9 +53,10 @@ const LinearProgressWithLabel = ({
         <StyledLinearProgress variant="determinate" {...props} />
       </Box>
       {props.value !== undefined && props.value >= 0 && (
-        <Typography variant="caption" color="text.secondary">{`${Math.round(
-          props.value
-        )}%`}</Typography>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+        >{`${props.value}%`}</Typography>
       )}
     </Box>
   );
