@@ -246,15 +246,7 @@ const Component = (): ReactElement => {
     }
   }, [current, server]);
 
-  useInterval(run, 1000 * 10);
-
-  useEffect(() => {
-    run();
-
-    return () => {
-      setSocketUrl(null);
-    };
-  }, [run]);
+  useInterval(run, 1000 * 10, { immediate: true });
 
   useEffect(() => {
     if (lastMessage) {
@@ -276,6 +268,10 @@ const Component = (): ReactElement => {
 
       setSocketUrl(null);
     }
+
+    return () => {
+      setSocketUrl(null);
+    };
   }, [lastMessage]);
 
   return (
