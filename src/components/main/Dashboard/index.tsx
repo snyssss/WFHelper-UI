@@ -14,7 +14,6 @@ import {
   Misc,
   RunningTime,
 } from '~/components/state';
-import Base from '~/components/state/Boss/Base';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   [`&.${paperClasses.root}`]: {
@@ -47,9 +46,6 @@ const Component = (): ReactElement => {
       </StyledPaper>
       <Grid container p={2} pb={0} spacing={2}>
         <Boss />
-      </Grid>
-      <Grid container p={2} pb={0} spacing={2}>
-        <Base />
       </Grid>
       <Grid container p={2} spacing={2}>
         <Grid item xs={6}>

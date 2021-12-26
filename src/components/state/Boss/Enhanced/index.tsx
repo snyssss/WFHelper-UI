@@ -229,7 +229,7 @@ const Container = (): ReactElement => {
 
   return (
     <>
-      {Object.keys(settings).map((item) => (
+      {Object.keys(settings || {}).map((item) => (
         <Grid key={item} item xs={4}>
           <Component name={item} />
         </Grid>
