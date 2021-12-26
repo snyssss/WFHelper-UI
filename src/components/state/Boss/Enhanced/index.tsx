@@ -10,6 +10,7 @@ import {
   Chip,
   Divider,
   FormControl,
+  Grid,
   InputLabel,
   List,
   ListItem,
@@ -223,4 +224,18 @@ const Component = ({ name }: ComponentProps): ReactElement | null => {
   return null;
 };
 
-export default Component;
+const Container = (): ReactElement => {
+  const settings = useGameStateByKey('铃铛设置') as GameState['铃铛设置'];
+
+  return (
+    <>
+      {Object.keys(settings).map((item) => (
+        <Grid key={item} item xs={4}>
+          <Component name={item} />
+        </Grid>
+      ))}
+    </>
+  );
+};
+
+export default Container;

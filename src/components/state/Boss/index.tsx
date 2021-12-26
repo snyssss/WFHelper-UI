@@ -9,14 +9,14 @@ export interface ComponentProps {
   name: string;
 }
 
-const Component = ({ name }: ComponentProps): ReactElement => {
+const Component = (): ReactElement => {
   const enhanced = useGameStateByKey('铃铛设置');
 
   if (enhanced) {
-    return <Enhanced name={name} />;
+    return <Enhanced />;
   }
 
-  return <Base name={name} />;
+  return <Base />;
 };
 
 export default Component;
