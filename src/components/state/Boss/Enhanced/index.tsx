@@ -1,4 +1,12 @@
-import React, { ReactElement, useCallback, useContext, useMemo } from 'react';
+import React, {
+  ChangeEvent,
+  ReactElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { ExpandMore } from '@mui/icons-material';
 import {
@@ -6,20 +14,24 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Button,
   Checkbox,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   FormControl,
+  FormControlLabel,
+  FormLabel,
   Grid,
-  InputLabel,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  SelectChangeEvent,
+  Radio,
+  RadioGroup,
   Theme,
   Typography,
 } from '@mui/material';
@@ -32,18 +44,117 @@ export interface ComponentProps {
   name: string;
 }
 
-const PartyMap = {
-  默认: '',
-  A: 'A',
-  B: 'B',
-  C: 'C',
-  D: 'D',
-  E: 'E',
-  F: 'F',
-  G: 'G',
-  H: 'H',
-  I: 'I',
-  J: 'J',
+export interface PartySelctorProps {
+  active: [string, string, BossInfo] | null;
+  onClose: () => void;
+}
+
+const PartySelector = ({
+  active,
+  onClose,
+}: PartySelctorProps): ReactElement | null => {
+  const { sendMessage } = useContext(SocketContext);
+
+  const [setValue, setSetValue] = useState('');
+  const [partyValue, setPartyValue] = useState('');
+
+  useEffect(() => {
+    if (active) {
+      const { set, party } = active[2];
+
+      setSetValue(set || '');
+      setPartyValue(party || '');
+    }
+  }, [active]);
+
+  const handleChangeSet = (event: ChangeEvent<HTMLInputElement>) => {
+    setSetValue((event.target as HTMLInputElement).value);
+  };
+
+  const handleChangeParty = (event: ChangeEvent<HTMLInputElement>) => {
+    setPartyValue((event.target as HTMLInputElement).value);
+  };
+
+  const handleReset = () => {
+    if (active) {
+      const [name, level] = active;
+
+      sendMessage('mergeConfigSettings', {
+        铃铛设置: {
+          [name]: {
+            [level]: {
+              set: ``,
+              party: ``,
+            },
+          },
+        },
+      });
+
+      onClose();
+    }
+  };
+
+  const handleOK = () => {
+    if (active && setValue && partyValue) {
+      const [name, level] = active;
+
+      sendMessage('mergeConfigSettings', {
+        铃铛设置: {
+          [name]: {
+            [level]: {
+              set: setValue,
+              party: partyValue,
+            },
+          },
+        },
+      });
+
+      onClose();
+    }
+  };
+
+  if (active) {
+    return (
+      <Dialog maxWidth="lg" fullWidth open>
+        <DialogTitle>队伍选择</DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth>
+            <FormLabel>SET</FormLabel>
+            <RadioGroup row value={setValue} onChange={handleChangeSet}>
+              {[...new Array(6)].map((_, index) => (
+                <FormControlLabel
+                  key={index}
+                  value={index + 1}
+                  control={<Radio />}
+                  label={`${index + 1}`}
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
+          <FormControl fullWidth>
+            <FormLabel>队伍</FormLabel>
+            <RadioGroup row value={partyValue} onChange={handleChangeParty}>
+              {[...new Array(10)].map((_, index) => (
+                <FormControlLabel
+                  key={index}
+                  value={index + 1}
+                  control={<Radio />}
+                  label={`${index + 1}`}
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleReset}>默认</Button>
+          <Button onClick={onClose}>取消</Button>
+          <Button onClick={handleOK}>确定</Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+
+  return null;
 };
 
 const Summary = ({ name }: ComponentProps): ReactElement => {
@@ -116,6 +227,8 @@ const Component = ({ name }: ComponentProps): ReactElement | null => {
 
   const counter = useGameStateByKey('铃铛计数') as Record<BossName, number>;
 
+  const [active, setActive] = useState<[string, string, BossInfo] | null>(null);
+
   const handleToggleEnabled = useCallback(
     (level: string, enabled: boolean) => () => {
       sendMessage('mergeConfigSettings', {
@@ -132,22 +245,16 @@ const Component = ({ name }: ComponentProps): ReactElement | null => {
   );
 
   const handleChangeParty = useCallback(
-    (level: string) => (event: SelectChangeEvent) => {
-      sendMessage('mergeConfigSettings', {
-        铃铛设置: {
-          [name]: {
-            [level]: {
-              party: event.target.value as string,
-            },
-          },
-        },
-      });
+    (level: string, info: BossInfo) => (e: { stopPropagation: () => void }) => {
+      e.stopPropagation();
+
+      setActive([name, level, info]);
     },
     [name, settings, sendMessage]
   );
 
-  const handleCancel = (e: { stopPropagation: () => void }) => {
-    e.stopPropagation();
+  const handleClose = () => {
+    setActive(null);
   };
 
   if (settings[name]) {
@@ -158,7 +265,9 @@ const Component = ({ name }: ComponentProps): ReactElement | null => {
         <AccordionDetails sx={{ p: 1 }}>
           <List sx={{ p: 0, width: '100%', bgcolor: 'background.paper' }}>
             {Object.entries(settings[name]).map(([level, info]) => {
-              const { name: key, party, enabled } = info;
+              const { name: key, set, party, enabled } = info;
+
+              const label = set && party ? `${set}-${party}` : '默认';
 
               return (
                 <ListItem
@@ -190,24 +299,12 @@ const Component = ({ name }: ComponentProps): ReactElement | null => {
                           >
                             {counter ? counter[key] : ''}
                           </Typography>
-                          <FormControl size="small" sx={{ width: 80 }}>
-                            <InputLabel shrink>队伍</InputLabel>
-                            <Select
-                              input={<OutlinedInput notched label="队伍" />}
-                              value={party}
-                              onClick={handleCancel}
-                              onChange={handleChangeParty(level)}
-                              displayEmpty
-                            >
-                              {Object.entries(PartyMap).map(
-                                ([label, value]) => (
-                                  <MenuItem key={label} value={value}>
-                                    {label}
-                                  </MenuItem>
-                                )
-                              )}
-                            </Select>
-                          </FormControl>
+                          <Chip
+                            color="primary"
+                            size="small"
+                            label={label}
+                            onClick={handleChangeParty(level, info)}
+                          />
                         </Box>
                       }
                     />
@@ -217,6 +314,7 @@ const Component = ({ name }: ComponentProps): ReactElement | null => {
             })}
           </List>
         </AccordionDetails>
+        <PartySelector active={active} onClose={handleClose} />
       </Accordion>
     );
   }

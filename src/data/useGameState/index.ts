@@ -6,6 +6,7 @@ export type BossLevel = string;
 
 export type BossInfo = {
   name: string;
+  set: string;
   party: string;
   enabled: boolean;
 };
